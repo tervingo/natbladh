@@ -4,6 +4,7 @@ import { db } from '../firebase'
 import { format } from 'date-fns'
 
 const DailyForm = () => {
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     date: format(new Date(), 'yyyy-MM-dd'),
     upplýsingar: {
@@ -92,6 +93,8 @@ const DailyForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log('Sending data:', formData)
+    setLoading(true)
     try {
       const dataToSave = {
         ...formData,
@@ -99,8 +102,10 @@ const DailyForm = () => {
         timestamp: new Date()
       }
       
-      await addDoc(collection(db, 'dailyRecords'), dataToSave)
-      alert('Gögnum vistaðum!')
+      console.log('Data to save:', dataToSave)
+      const docRef = await addDoc(collection(db, 'dailyRecords'), dataToSave)
+      console.log('Document written with ID: ', docRef.id)
+      alert('Gögnum vistaðum! ID: ' + docRef.id)
       
       // Reset form
       setFormData({
@@ -126,7 +131,9 @@ const DailyForm = () => {
       })
     } catch (error) {
       console.error('Villa við vistun:', error)
-      alert('Villa kom upp við vistun')
+      alert('Villa kom upp við vistun: ' + error.message)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -450,9 +457,10 @@ const DailyForm = () => {
         <div className="pt-4">
           <button
             type="submit"
-            className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 font-medium"
+            disabled={loading}
+            className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            Vista gögn
+            {loading ? 'Vistar...' : 'Vista gögn'}
           </button>
         </div>
       </form>

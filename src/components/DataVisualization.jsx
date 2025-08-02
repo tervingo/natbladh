@@ -37,7 +37,7 @@ const DataVisualization = () => {
   }
 
   const getTotalCoffee = () => {
-    return records.reduce((sum, record) => sum + (record.upplýsingar?.kaffi || 0), 0)
+    return records.reduce((sum, record) => sum + (record.upplýsingar?.ki || 0), 0)
   }
 
   const getAlcoholDays = () => {
@@ -95,7 +95,7 @@ const DataVisualization = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">
-                    Samtals kaffi
+                    Samtals ki
                   </dt>
                   <dd className="text-lg font-medium text-gray-900">
                     {getTotalCoffee()}
@@ -169,7 +169,7 @@ const DataVisualization = () => {
                     </p>
                     <div className="mt-1 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-500">
                       <span>Lekar: {record['fjöldi leka'] || 0}</span>
-                      <span>Kaffi: {record.upplýsingar?.kaffi || 0}</span>
+                      <span>Ki: {record.upplýsingar?.ki || 0}</span>
                       <span>Áfengi: {record.upplýsingar?.áfengi ? 'Já' : 'Nei'}</span>
                       <span>Æfing: {record.upplýsingar?.æfing || 0}</span>
                     </div>
@@ -214,7 +214,6 @@ const DataVisualization = () => {
                       <div key={index} className="bg-gray-50 p-3 rounded text-sm">
                         <span className="font-medium">{leki.tími}</span>
                         <span className="ml-4">Styrkur: {leki.styrkur}</span>
-                        <span className="ml-4">Inní: {leki.inní}</span>
                         <span className="ml-4">Þörf: {leki.þörf}</span>
                         {leki.aðvarun && <span className="ml-4 text-orange-600">(Aðvarun)</span>}
                       </div>
@@ -225,18 +224,38 @@ const DataVisualization = () => {
                 )}
               </div>
 
+              {/* Lát */}
+              <div className="mb-6">
+                <h4 className="font-medium text-gray-900 mb-2">
+                  Lát ({selectedRecord.lát?.length || 0})
+                </h4>
+                {selectedRecord.lát && selectedRecord.lát.length > 0 ? (
+                  <div className="space-y-2">
+                    {selectedRecord.lát.map((lát, index) => (
+                      <div key={index} className="bg-purple-50 p-3 rounded text-sm">
+                        <span className="font-medium">{lát.tími}</span>
+                        <span className="ml-4">Flæði: {lát.flaedi}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-sm">Engin lát skráð</p>
+                )}
+              </div>
+
               {/* Upplýsingar */}
               <div className="mb-6">
                 <h4 className="font-medium text-gray-900 mb-2">Upplýsingar</h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                   <div>Hvar: {selectedRecord.upplýsingar?.hvar || '-'}</div>
-                  <div>Kaffi: {selectedRecord.upplýsingar?.kaffi || 0}</div>
+                  <div>Ki: {selectedRecord.upplýsingar?.ki || 0}</div>
                   <div>Áfengi: {selectedRecord.upplýsingar?.áfengi ? 'Já' : 'Nei'}</div>
                   <div>Æfing: {selectedRecord.upplýsingar?.æfing || 0}</div>
-                  <div>Seðl: {selectedRecord.upplýsingar?.seðl ? 'Já' : 'Nei'}</div>
+                  <div>Sðl: {selectedRecord.upplýsingar?.sðl ? 'Já' : 'Nei'}</div>
                   <div>Lip-riv: {selectedRecord.upplýsingar?.['lip-riv'] || '-'}</div>
                   <div>Síð lio: {selectedRecord.upplýsingar?.['síð lio'] || '-'}</div>
-                  <div>Kvöldmat: {selectedRecord.upplýsingar?.kvöldmat || '-'}</div>
+                  <div>Kvöldmatur: {selectedRecord.upplýsingar?.kvöldmatur || '-'}</div>
+                  <div>Síð lát: {selectedRecord.upplýsingar?.['síð lát'] || '-'}</div>
                   <div>Að sofa: {selectedRecord.upplýsingar?.['að sofa'] || '-'}</div>
                   <div>Natft: {selectedRecord.upplýsingar?.natft ? 'Já' : 'Nei'}</div>
                   <div>Bl: {selectedRecord.upplýsingar?.bl ? 'Já' : 'Nei'}</div>
