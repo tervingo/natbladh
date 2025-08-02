@@ -6,21 +6,23 @@ import { format } from 'date-fns'
 const DailyForm = () => {
   const [formData, setFormData] = useState({
     date: format(new Date(), 'yyyy-MM-dd'),
-    lekar: [],
     upplýsingar: {
       hvar: '',
-      kaffi: 0,
+      ki: 0,
       áfengi: false,
       æfing: 0,
-      seðl: false,
+      sðl: false,
       'lip-riv': '',
       'síð lio': '',
-      kvöldmat: '',
+      kvöldmatur: '',
+      'síð lát': '',
       'að sofa': '',
       natft: false,
       bl: false,
       pap: false,
     },
+    lekar: [],
+    lát: [],
     athugasemd: ''
   })
 
@@ -28,8 +30,12 @@ const DailyForm = () => {
     tími: '',
     aðvarun: false,
     styrkur: 1,
-    inní: 0,
     þörf: 0,
+  })
+
+  const [currentLát, setCurrentLát] = useState({
+    tími: '',
+    flaedi: 0,
   })
 
   const addLeki = () => {
@@ -42,7 +48,6 @@ const DailyForm = () => {
         tími: '',
         aðvarun: false,
         styrkur: 1,
-        inní: 0,
         þörf: 0,
       })
     }
@@ -52,6 +57,26 @@ const DailyForm = () => {
     setFormData(prev => ({
       ...prev,
       lekar: prev.lekar.filter((_, i) => i !== index)
+    }))
+  }
+
+  const addLát = () => {
+    if (currentLát.tími) {
+      setFormData(prev => ({
+        ...prev,
+        lát: [...prev.lát, { ...currentLát }]
+      }))
+      setCurrentLát({
+        tími: '',
+        flaedi: 0,
+      })
+    }
+  }
+
+  const removeLát = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      lát: prev.lát.filter((_, i) => i !== index)
     }))
   }
 
@@ -80,21 +105,23 @@ const DailyForm = () => {
       // Reset form
       setFormData({
         date: format(new Date(), 'yyyy-MM-dd'),
-        lekar: [],
         upplýsingar: {
           hvar: '',
-          kaffi: 0,
+          ki: 0,
           áfengi: false,
           æfing: 0,
-          seðl: false,
+          sðl: false,
           'lip-riv': '',
           'síð lio': '',
-          kvöldmat: '',
+          kvöldmatur: '',
+          'síð lát': '',
           'að sofa': '',
           natft: false,
           bl: false,
           pap: false,
         },
+        lekar: [],
+        lát: [],
         athugasemd: ''
       })
     } catch (error) {
@@ -124,7 +151,7 @@ const DailyForm = () => {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Lekar</h3>
           
           {/* Add new leki */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Tími</label>
               <input
@@ -159,19 +186,6 @@ const DailyForm = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Inní</label>
-              <select
-                value={currentLeki.inní}
-                onChange={(e) => setCurrentLeki(prev => ({ ...prev, inní: parseInt(e.target.value) }))}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value={0}>0</option>
-                <option value={1}>1</option>
-                <option value={2}>2</option>
-              </select>
-            </div>
-            
-            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Þörf</label>
               <select
                 value={currentLeki.þörf}
@@ -184,7 +198,7 @@ const DailyForm = () => {
               </select>
             </div>
             
-            <div className="md:col-span-5">
+            <div className="md:col-span-4">
               <button
                 type="button"
                 onClick={addLeki}
@@ -202,12 +216,74 @@ const DailyForm = () => {
               {formData.lekar.map((leki, index) => (
                 <div key={index} className="flex items-center justify-between bg-white p-3 rounded border">
                   <span>
-                    {leki.tími} - Styrkur: {leki.styrkur}, Inní: {leki.inní}, Þörf: {leki.þörf}
+                    {leki.tími} - Styrkur: {leki.styrkur}, Þörf: {leki.þörf}
                     {leki.aðvarun && ' (Aðvarun)'}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeLeki(index)}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    Fjarlægja
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Lát Section */}
+        <div className="border rounded-lg p-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Lát</h3>
+          
+          {/* Add new lát */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tími</label>
+              <input
+                type="time"
+                value={currentLát.tími}
+                onChange={(e) => setCurrentLát(prev => ({ ...prev, tími: e.target.value }))}
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Flæði</label>
+              <select
+                value={currentLát.flaedi}
+                onChange={(e) => setCurrentLát(prev => ({ ...prev, flaedi: parseInt(e.target.value) }))}
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                <option value={0}>0</option>
+                <option value={1}>1</option>
+                <option value={2}>2</option>
+              </select>
+            </div>
+            
+            <div className="md:col-span-2">
+              <button
+                type="button"
+                onClick={addLát}
+                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                Bæta við lát
+              </button>
+            </div>
+          </div>
+          
+          {/* List of lát */}
+          {formData.lát.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="font-medium text-gray-900">Skráð lát ({formData.lát.length}):</h4>
+              {formData.lát.map((lát, index) => (
+                <div key={index} className="flex items-center justify-between bg-white p-3 rounded border">
+                  <span>
+                    {lát.tími} - Flæði: {lát.flaedi}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeLát(index)}
                     className="text-red-600 hover:text-red-800"
                   >
                     Fjarlægja
@@ -234,12 +310,12 @@ const DailyForm = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kaffi</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Ki</label>
               <input
                 type="number"
                 min="0"
-                value={formData.upplýsingar.kaffi}
-                onChange={(e) => handleUpplýsingarChange('kaffi', parseInt(e.target.value) || 0)}
+                value={formData.upplýsingar.ki}
+                onChange={(e) => handleUpplýsingarChange('ki', parseInt(e.target.value) || 0)}
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
@@ -270,11 +346,11 @@ const DailyForm = () => {
             <div className="flex items-center">
               <input
                 type="checkbox"
-                checked={formData.upplýsingar.seðl}
-                onChange={(e) => handleUpplýsingarChange('seðl', e.target.checked)}
+                checked={formData.upplýsingar.sðl}
+                onChange={(e) => handleUpplýsingarChange('sðl', e.target.checked)}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label className="ml-2 text-sm font-medium text-gray-700">Seðl</label>
+              <label className="ml-2 text-sm font-medium text-gray-700">Sðl</label>
             </div>
             
             <div>
@@ -298,11 +374,21 @@ const DailyForm = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kvöldmat</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Kvöldmatur</label>
               <input
                 type="time"
-                value={formData.upplýsingar.kvöldmat}
-                onChange={(e) => handleUpplýsingarChange('kvöldmat', e.target.value)}
+                value={formData.upplýsingar.kvöldmatur}
+                onChange={(e) => handleUpplýsingarChange('kvöldmatur', e.target.value)}
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Síð lát</label>
+              <input
+                type="time"
+                value={formData.upplýsingar['síð lát']}
+                onChange={(e) => handleUpplýsingarChange('síð lát', e.target.value)}
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
